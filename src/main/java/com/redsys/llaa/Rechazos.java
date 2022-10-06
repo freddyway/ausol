@@ -47,7 +47,7 @@ public class Rechazos {
 
             emf = Persistence.createEntityManagerFactory("llaaPU");
 
-            loadIP0040();
+//            loadIP0040();
             
             try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(TANDEM_SQL)))){            
             	try(BufferedReader in = new BufferedReader(new FileReader(TARJETAS))){
@@ -72,23 +72,29 @@ public class Rechazos {
         log.info("Inicio loadIP0040....");
         
         String reg;
+        long t1 = 0;
+        long t2 = 0;
 
         try {
 
             try (BufferedReader reader = new BufferedReader(new FileReader(IP40_FILE))) {
                 borrarIP0040();
-                
+
                 log.info("createIP0040....");
+                t1 = System.currentTimeMillis();
                 while ((reg = reader.readLine()) != null) {
                     createIP0040(reg);                     
                 }
+
+                t2 = System.currentTimeMillis();
             }
         } catch (IOException e) {
             log.error("ERROR GRAVE !!!!", e);
         }
-        
-        log.info("Fin loadIP0040.");
 
+        double tdif = (t2 - t1) / 1000.0;
+
+        log.info("Fin loadIP0040. en {} segs",tdif);
     }
 
     private static void createIP0040(String reg) {
@@ -280,19 +286,21 @@ public class Rechazos {
     private static void borrarIP0040() {
         
         log.info("borrando IP0040...");
-        
+        long t1 =System.currentTimeMillis();
+
         EntityManager em = emf.createEntityManager();        
         
         em.getTransaction().begin();
-        
         Query q = em.createQuery("delete from Ip0040");
         int deletes = q.executeUpdate();
-        log.warn( "deletes IP0040! = {}",deletes);
-        
         em.getTransaction().commit();
 
         em.close();
-        
+
+        long t2 =System.currentTimeMillis();
+        double tdif = (t2 - t1) / 1000.0;
+
+        log.warn( "deletes IP0040! = {} en {} segs",deletes,tdif);
         log.info("borrado IP0040!");
     }
 

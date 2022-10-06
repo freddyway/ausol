@@ -3,28 +3,7 @@
 	xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
 
-	<persistence-unit name="llaaPU" transaction-type="RESOURCE_LOCAL">
-		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-		<class>com.redsys.llaa.model.h2.Ip0040</class>
-		<class>com.redsys.llaa.model.h2.Ip0090</class>
-		<class>com.redsys.llaa.model.h2.S4bmcint</class>
-		<properties>
-			<property name="javax.persistence.jdbc.url" value="jdbc:h2:~/mc1" />
-			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
-			<property name="javax.persistence.jdbc.user" value="sa" />
-			<property name="javax.persistence.jdbc.password" value="sa" />
-			<property name="javax.persistence.schema-generation.database.action" value="none"/>
-			<!--			<property name="javax.persistence.sql-load-script-source" value="data.sql"/>-->
-
-			<!--
-                         <property name="eclipselink.logging.level" value="FINE" />
-                         <property name="eclipselink.logging.parameters" value="true" />
-                         <property name="eclipselink.logging.file" value="jpa_h2.log" />
-            -->
-		</properties>
-	</persistence-unit>
-
-	<!--	<persistence-unit name="llaaPU" transaction-type="RESOURCE_LOCAL">-->
+<!--	<persistence-unit name="llaaPU" transaction-type="RESOURCE_LOCAL">-->
 <!--		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>-->
 <!--&lt;!&ndash; 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider> &ndash;&gt;-->
 <!--		<class>com.redsys.llaa.model.h2.Ip0040</class>-->
@@ -102,6 +81,26 @@
 <!-- 		</properties> -->
 <!-- 	</persistence-unit> -->
 	
+     Via esta bieny rapida, pero hay problema cuando entras en los IDE (dBeaver,etc) para ver los datos
+ 	<persistence-unit name="llaaPU" transaction-type="RESOURCE_LOCAL">
+ 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+ 		<class>com.redsys.llaa.model.h2.Ip0040</class>
+ 		<class>com.redsys.llaa.model.h2.Ip0090</class>
+ 		<class>com.redsys.llaa.model.h2.S4bmcint</class>
+ 		<properties>
+ 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:~/mc1" />
+ 			<property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
+ 			<property name="javax.persistence.jdbc.user" value="sa" />
+ 			<property name="javax.persistence.jdbc.password" value="sa" />
+			<property name="javax.persistence.schema-generation.database.action" value="none"/>
+<!--			<property name="javax.persistence.sql-load-script-source" value="data.sql"/>-->
 
+			<!--
+                         <property name="eclipselink.logging.level" value="FINE" />
+                         <property name="eclipselink.logging.parameters" value="true" />
+                         <property name="eclipselink.logging.file" value="jpa_h2.log" />
+            -->
+ 		</properties>
+ 	</persistence-unit>
 
 </persistence>
