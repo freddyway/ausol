@@ -1,0 +1,31 @@
+DROP TABLE APP.S4BMCINT;
+
+CREATE TABLE APP.S4BMCINT
+  (
+    BIN_RANGO_SUPERIOR             VARCHAR(19)  	NOT NULL
+  , BIN_RANGO_INFERIOR             VARCHAR(19)  	NOT NULL
+  , COD_PROCESO                    DECIMAL( 2, 0 )  NOT NULL
+  , LONG_BIN                       DECIMAL( 2, 0 )  DEFAULT 06 NOT NULL
+  , MARCA_MASTER                   VARCHAR(3)  		NOT NULL
+  , TIPO_TARJE_MASTER              VARCHAR(3)  		NOT NULL
+  , IDENTIF_MIEMBRO                DECIMAL( 11, 0 ) NOT NULL
+  , TIPO_PRODU_MASTER              VARCHAR(1)  		NOT NULL
+  , ENDPOINT                       DECIMAL( 7, 0 )  NOT NULL
+  , COD_PAIS_MASTER                VARCHAR(3)  		NOT NULL
+  , COD_PAIS_MASTER_NUM            DECIMAL( 3, 0 )  NOT NULL
+  , REGION_MAS                     VARCHAR(1)  		NOT NULL
+  , COD_MON_MAS                    DECIMAL( 3, 0 )  NOT NULL
+  , EXP_COD_MON                    DECIMAL( 1, 0 )  NOT NULL
+  , CLASE_PRODUCTO                 VARCHAR(1)  		NOT NULL
+  , IND_RUTA_TRANS                 VARCHAR(1)  		NOT NULL
+  , IND_REASIGNAR_PRODU            VARCHAR(1)  		NOT NULL
+  , FECHA_MODIFIC                  DECIMAL( 8, 0 )  NOT NULL
+  , IND_CASHBACK                   VARCHAR(1)  		NOT NULL
+  , IND_REASIG_FIRST_PRE           VARCHAR(1)  		NOT NULL
+  , IND_PAYPASS                    VARCHAR(1)  		NOT NULL
+  , IND_LEVEL_PARTI                VARCHAR(1)  		NOT NULL
+  , FECHA_ACTIV_LEVEL_PARTI        DECIMAL( 6, 0 )  NOT NULL
+  , TIPO_TARJETA_HP                DECIMAL( 4, 0 )  NOT NULL
+  , MARCA_TARJETA_HP               DECIMAL( 3, 0 )  NOT NULL,
+  PRIMARY KEY(COD_PROCESO, BIN_RANGO_SUPERIOR, BIN_RANGO_INFERIOR)
+  );
