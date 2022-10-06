@@ -26,6 +26,8 @@ import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.lang.Long.parseLong;
+
 /**
  *
  * @author S3316AM
@@ -191,10 +193,10 @@ public class Rechazos {
         S4bmcintPK pK = new S4bmcintPK(ip0040.getRanmay(), ip0040.getRanmen(), (short) 0);
         S4bmcint s4bmcint = new S4bmcint(pK);
         
-        long r1 = new Long(ip0040.getRanmay());
-        long r2 = new Long(ip0040.getRanmen());
-        String lbin = Long.toString(r1 - r2); 
-        
+        long r1 = parseLong(ip0040.getRanmay());
+        long r2 = parseLong(ip0040.getRanmen());
+        String lbin = Long.toString(r1 - r2);
+
         //alf 2021-03-23
         int count9s = 0;
         byte[] bs = lbin.getBytes();
