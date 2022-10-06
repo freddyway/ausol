@@ -5,9 +5,6 @@
  */
 package com.redsys.llaa;
 
-import com.redsys.llaa.model.Ip0040;
-import com.redsys.llaa.model.S4bmcint;
-import com.redsys.llaa.model.S4bmcintPK;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -26,14 +23,16 @@ import javax.persistence.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static java.lang.Long.parseLong;
+import com.redsys.llaa.model.h2.Ip0040;
+import com.redsys.llaa.model.h2.S4bmcint;
+import com.redsys.llaa.model.h2.S4bmcintPK;
 
 /**
  *
  * @author S3316AM
  */
 public class Rechazos {
-//Hola
+
     private static final Logger log = LoggerFactory.getLogger(Rechazos.class);
     private static final String IP40_FILE ="C:/temp/ibm/RBIP40Q0.TXT";
     private static final String TANDEM_SQL = "S4BMCINT_INSERT.SQL";
@@ -41,7 +40,7 @@ public class Rechazos {
     
     private static EntityManagerFactory emf;
 
-    private static PrintWriter out;
+    //private static PrintWriter out;
     
     /**
      * @param args the command line arguments
@@ -53,19 +52,19 @@ public class Rechazos {
         try {
             log.info("AUSOL Operaciones rechazadas....");
 
-            emf = Persistence.createEntityManagerFactory("llaaH2");
+            emf = Persistence.createEntityManagerFactory("llaaPU");
 
 //            loadIP0040();
             
-            out = new PrintWriter(new BufferedWriter(new FileWriter(TANDEM_SQL)));            
-            try(BufferedReader in = new BufferedReader(new FileReader(TARJETAS))){
-                while((linea = in.readLine()) !=  null){
-                    buscarRango(linea);
-                }
+            try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(TANDEM_SQL)))){            
+            	try(BufferedReader in = new BufferedReader(new FileReader(TARJETAS))){
+            		while((linea = in.readLine()) !=  null){
+            			buscarRango(linea,out);
+            		}
+            	}
             }
 
             emf.close();
-            out.close();
 
             log.info("fin.");
         } catch (IOException ex) {
@@ -139,7 +138,7 @@ public class Rechazos {
         return ip0040;
     }
 
-    private static void buscarRango(String tarjeta) {
+    private static void buscarRango(String tarjeta,PrintWriter out) {
 
     	if(tarjeta.length() == 8)
            tarjeta = tarjeta.concat("00000001");
@@ -162,7 +161,7 @@ public class Rechazos {
         if (list.isEmpty()) {
             log.error("NO EXISTE!!! {}", tarjeta);
         } else {
-       	    taskTandem(em, list.get(0));
+       	    taskTandem(em, list.get(0),out);
         }
 
         em.getTransaction().commit();
@@ -170,7 +169,7 @@ public class Rechazos {
 
     }
 
-	private static void taskTandem(EntityManager em, Ip0040 ip0040) {
+	private static void taskTandem(EntityManager em, Ip0040 ip0040,PrintWriter out) {
 		S4bmcintPK id = new S4bmcintPK(ip0040.getRanmay(), ip0040.getRanmen(), (short) 0); 
 		S4bmcint s4bmcint = em.find(S4bmcint.class, id);
 		
@@ -179,8 +178,8 @@ public class Rechazos {
 		} 
 		
 		if(s4bmcint != null){
-		    saveTandem(s4bmcint,"0");
-		    saveTandem(s4bmcint,"1");
+		    saveTandem(s4bmcint,"0",out);
+		    saveTandem(s4bmcint,"1",out);
 		}
 	}
 
@@ -193,10 +192,10 @@ public class Rechazos {
         S4bmcintPK pK = new S4bmcintPK(ip0040.getRanmay(), ip0040.getRanmen(), (short) 0);
         S4bmcint s4bmcint = new S4bmcint(pK);
         
-        long r1 = parseLong(ip0040.getRanmay());
-        long r2 = parseLong(ip0040.getRanmen());
-        String lbin = Long.toString(r1 - r2);
-
+        long r1 = new Long(ip0040.getRanmay());
+        long r2 = new Long(ip0040.getRanmen());
+        String lbin = Long.toString(r1 - r2); 
+        
         //alf 2021-03-23
         int count9s = 0;
         byte[] bs = lbin.getBytes();
@@ -312,7 +311,7 @@ public class Rechazos {
         log.info("borrado IP0040!");
     }
 
-    private static void saveTandem(S4bmcint s4bmcint, String codProceso) {
+    private static void saveTandem(S4bmcint s4bmcint, String codProceso, PrintWriter out) {
         
         log.info("saveTandem {}",codProceso+ " -> "+ s4bmcint.getS4bmcintPK().getBinRangoInferior());
         

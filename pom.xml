@@ -18,21 +18,61 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.4.197</version>
-		</dependency>
-		<dependency>
 			<groupId>org.eclipse.persistence</groupId>
 			<artifactId>org.eclipse.persistence.jpa</artifactId>
 			<version>2.5.2</version>
 		</dependency>
+<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-entitymanager -->
+<!-- <dependency> -->
+<!--     <groupId>org.hibernate</groupId> -->
+<!--     <artifactId>hibernate-entitymanager</artifactId> -->
+<!--     <version>5.0.12.Final</version> -->
+<!-- </dependency> -->
+		
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>1.2.11</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.197</version>
+		</dependency>
+
+		<dependency>
+			<groupId>es.redsys.comunes.drivers.db2</groupId>
+			<artifactId>db2jcc</artifactId>
+			<version>3.61.75</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>es.redsys.comunes.drivers.db2</groupId>
+			<artifactId>db2jcc_license_cisuz</artifactId>
+			<version>3.61.75</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.derby/derbyclient -->
+		<dependency>
+		    <groupId>org.apache.derby</groupId>
+		    <artifactId>derbyclient</artifactId>
+		    <version>10.8.3.0</version>
+		</dependency>
+		
+		<!-- https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client -->
+<!-- 		<dependency> -->
+<!-- 		    <groupId>org.mariadb.jdbc</groupId> -->
+<!-- 		    <artifactId>mariadb-java-client</artifactId> -->
+<!-- 		    <version>1.8.0</version> -->
+<!-- 		</dependency> -->
+		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+<!-- 		<dependency> -->
+<!-- 		    <groupId>mysql</groupId> -->
+<!-- 		    <artifactId>mysql-connector-java</artifactId> -->
+<!-- 		    <version>5.1.46</version> -->
+<!-- 		</dependency> -->
+		
 	</dependencies>
 	<build>
 		<finalName>${project.artifactId}</finalName>
