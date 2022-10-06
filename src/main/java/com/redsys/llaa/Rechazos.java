@@ -5,27 +5,20 @@
  */
 package com.redsys.llaa;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import com.redsys.llaa.model.h2.Ip0040;
+import com.redsys.llaa.model.h2.S4bmcint;
+import com.redsys.llaa.model.h2.S4bmcintPK;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.redsys.llaa.model.h2.Ip0040;
-import com.redsys.llaa.model.h2.S4bmcint;
-import com.redsys.llaa.model.h2.S4bmcintPK;
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -47,14 +40,14 @@ public class Rechazos {
      */
     public static void main(String[] args) {
         
-        String linea = "";
+        String linea;
         
         try {
             log.info("AUSOL Operaciones rechazadas....");
 
             emf = Persistence.createEntityManagerFactory("llaaPU");
 
-//            loadIP0040();
+            loadIP0040();
             
             try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(TANDEM_SQL)))){            
             	try(BufferedReader in = new BufferedReader(new FileReader(TARJETAS))){
@@ -78,11 +71,11 @@ public class Rechazos {
 
         log.info("Inicio loadIP0040....");
         
-        String reg = "";
+        String reg;
 
         try {
 
-            try (BufferedReader reader = new BufferedReader(new FileReader(new File(IP40_FILE)))) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(IP40_FILE))) {
                 borrarIP0040();
                 
                 log.info("createIP0040....");
@@ -98,7 +91,7 @@ public class Rechazos {
 
     }
 
-    private static Ip0040 createIP0040(String reg) {
+    private static void createIP0040(String reg) {
 
         Ip0040 ip0040 = new Ip0040();
 
@@ -110,16 +103,16 @@ public class Rechazos {
         ip0040.setCodact(reg.substring(10, 11));
         ip0040.setTabla(reg.substring(11, 19));
         ip0040.setAcepbrand(reg.substring(60, 63));
-        ip0040.setAcbrprio(new Short(reg.substring(63, 65)));
-        ip0040.setMbrid(new Long(reg.substring(65, 76)));
-        ip0040.setTipoprod(new Short(reg.substring(76, 77)));
-        ip0040.setEndpoint(new Integer(reg.substring(77, 84)));
+        ip0040.setAcbrprio(Short.valueOf(reg.substring(63, 65)));
+        ip0040.setMbrid(Long.valueOf(reg.substring(65, 76)));
+        ip0040.setTipoprod(Short.valueOf(reg.substring(76, 77)));
+        ip0040.setEndpoint(Integer.valueOf(reg.substring(77, 84)));
         ip0040.setIndformat(reg.substring(84, 85));
         ip0040.setPaisalfa(reg.substring(85, 88));
-        ip0040.setPaisnum(new Short(reg.substring(88, 91)));
+        ip0040.setPaisnum(Short.valueOf(reg.substring(88, 91)));
         ip0040.setRegion(reg.substring(91, 92));
-        ip0040.setMoneda(new Short(reg.substring(92, 95)));
-        ip0040.setExponente(new Short(reg.substring(95, 96)));
+        ip0040.setMoneda(Short.valueOf(reg.substring(92, 95)));
+        ip0040.setExponente(Short.valueOf(reg.substring(95, 96)));
         ip0040.setOccursMonedas(reg.substring(96, 124));
         ip0040.setFiller(reg.substring(124, 125));
         ip0040.setRouting(reg.substring(125, 126));
@@ -134,8 +127,7 @@ public class Rechazos {
         em.getTransaction().commit();
 
         em.close();
-        
-        return ip0040;
+
     }
 
     private static void buscarRango(String tarjeta,PrintWriter out) {
@@ -175,13 +167,11 @@ public class Rechazos {
 		
 		if(s4bmcint == null){
 		   s4bmcint = insertS4bmcint(ip0040); 
-		} 
-		
-		if(s4bmcint != null){
-		    saveTandem(s4bmcint,"0",out);
-		    saveTandem(s4bmcint,"1",out);
 		}
-	}
+
+        saveTandem(s4bmcint,"0",out);
+        saveTandem(s4bmcint,"1",out);
+    }
 
     private static S4bmcint insertS4bmcint(Ip0040 ip0040) {
 
@@ -192,18 +182,18 @@ public class Rechazos {
         S4bmcintPK pK = new S4bmcintPK(ip0040.getRanmay(), ip0040.getRanmen(), (short) 0);
         S4bmcint s4bmcint = new S4bmcint(pK);
         
-        long r1 = new Long(ip0040.getRanmay());
-        long r2 = new Long(ip0040.getRanmen());
+        long r1 = Long.parseLong(ip0040.getRanmay());
+        long r2 = Long.parseLong(ip0040.getRanmen());
         String lbin = Long.toString(r1 - r2); 
         
         //alf 2021-03-23
         int count9s = 0;
         byte[] bs = lbin.getBytes();
-        for (int i = 0; i < bs.length; i++) {
-            if('9' == bs[i]){                
+        for (byte b : bs) {
+            if ('9' == b) {
                 count9s++;
             }
-            
+
         }
         //alf 2021-03-23
 //        s4bmcint.setLongBin((short) (19 - lbin.length()));
@@ -225,7 +215,7 @@ public class Rechazos {
         
         String fechaMod = new SimpleDateFormat("yyyyMMdd").format(new Date());
 //        String fechaMod = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
-        s4bmcint.setFechaModific(new Integer(fechaMod));
+        s4bmcint.setFechaModific(Integer.parseInt(fechaMod));
         
         s4bmcint.setIndCashback("N");
         s4bmcint.setIndReasigFirstPre("N");
@@ -245,38 +235,33 @@ public class Rechazos {
     }
 
     private static int tipo_tarjeta(Ip0040 ip0040) {
-        int w_tipo_tarj = 0;
+        int w_tipo_tarj;
 
         String ip40_tipo_tarje_master = ip0040.getIdprod();
         String ip40_region_mas = ip0040.getRegion();
         String ip40_marca_master = ip0040.getAcepbrand();
 
-        if ((ip40_tipo_tarje_master.equals("MCG")
+        boolean b = ip40_tipo_tarje_master.equals("MCG")
                 || ip40_tipo_tarje_master.equals("MDG")
                 || ip40_tipo_tarje_master.equals("MDP")
-                || ip40_tipo_tarje_master.equals("MPL"))
-                && ip40_region_mas.equals("D")) {
+                || ip40_tipo_tarje_master.equals("MPL");
+
+        if (b  && ip40_region_mas.equals("D")) {
             w_tipo_tarj = 57;
-        } else if ((ip40_tipo_tarje_master.equals("MCG")
-                || ip40_tipo_tarje_master.equals("MDG")
-                || ip40_tipo_tarje_master.equals("MDP")
-                || ip40_tipo_tarje_master.equals("MPL"))
-                && !ip40_region_mas.equals("D")) {
+        } else if (b) {
             w_tipo_tarj = 59;
         } else if (ip40_marca_master.equals("CIR") && ip40_region_mas.equals("D")) {
             w_tipo_tarj = 75;
-        } else if (ip40_marca_master.equals("CIR") && !ip40_region_mas.equals("D")) {
+        } else if (ip40_marca_master.equals("CIR")) {
             w_tipo_tarj = 81;
         } else if (ip40_marca_master.equals("MSI") && ip40_region_mas.equals("D")) {
             w_tipo_tarj = 76;
-        } else if (ip40_marca_master.equals("MSI") && !ip40_region_mas.equals("D")) {
+        } else if (ip40_marca_master.equals("MSI")) {
             w_tipo_tarj = 82;
         } else if ((ip40_marca_master.equals("MCC") || ip40_marca_master.equals("DMC"))
                 && ip40_region_mas.equals("D")) {
             w_tipo_tarj = 71;
-        } else if ((ip40_marca_master.equals("MCC")
-                || ip40_marca_master.equals("DMC"))
-                && !ip40_region_mas.equals("D")) {
+        } else if (ip40_marca_master.equals("MCC") || ip40_marca_master.equals("DMC")) {
             w_tipo_tarj = 73;
         } else if (ip40_marca_master.equals("MAV")
                 || ip40_marca_master.equals("PRO")
@@ -316,95 +301,64 @@ public class Rechazos {
         log.info("saveTandem {}",codProceso+ " -> "+ s4bmcint.getS4bmcintPK().getBinRangoInferior());
         
         S4bmcintPK s4bmcintPK = s4bmcint.getS4bmcintPK();
+
+        String builder = "INSERT INTO =S4BMCINT VALUES (" +
+                System.lineSeparator() +
+                "'" + s4bmcintPK.getBinRangoSuperior() + "'" +
+                "," +
+                "'" + s4bmcintPK.getBinRangoInferior() + "'" +
+                "," +
+                codProceso +
+                "," +
+                s4bmcint.getLongBin() +
+                "," +
+                "'" + s4bmcint.getMarcaMaster() + "'" +
+                "," +
+                "'" + s4bmcint.getTipoTarjeMaster() + "'" +
+                "," +
+                System.lineSeparator() +
+                s4bmcint.getIdentifMiembro() +
+                "," +
+                "'" + s4bmcint.getTipoProduMaster() + "'" +
+                "," +
+                s4bmcint.getEndpoint() +
+                "," +
+                "'" + s4bmcint.getCodPaisMaster() + "'" +
+                "," +
+                s4bmcint.getCodPaisMasterNum() +
+                "," +
+                "'" + s4bmcint.getRegionMas() + "'" +
+                "," +
+                s4bmcint.getCodMonMas() +
+                "," +
+                s4bmcint.getExpCodMon() +
+                "," +
+                "'" + s4bmcint.getClaseProducto() + "'" +
+                "," +
+                "'" + s4bmcint.getIndRutaTrans() + "'" +
+                "," +
+                "'" + s4bmcint.getIndReasignarProdu() + "'" +
+                "," +
+                s4bmcint.getFechaModific() +
+                "," +
+                System.lineSeparator() +
+                "'" + s4bmcint.getIndCashback() + "'" +
+                "," +
+                "'" + s4bmcint.getIndReasigFirstPre() + "'" +
+                "," +
+                "'" + s4bmcint.getIndPaypass() + "'" +
+                "," +
+                "'" + s4bmcint.getIndLevelParti() + "'" +
+                "," +
+                s4bmcint.getFechaActivLevelParti() +
+                "," +
+                s4bmcint.getTipoTarjetaHp() +
+                "," +
+                s4bmcint.getMarcaTarjetaHp() +
+                ");" +
+                System.lineSeparator();
         
-        StringBuilder builder = new StringBuilder();
-        builder.append("INSERT INTO =S4BMCINT VALUES (");
-        builder.append(System.lineSeparator());
-        
-        builder.append("'");builder.append(s4bmcintPK.getBinRangoSuperior());builder.append("'");
-        builder.append(",");
-        
-        builder.append("'");builder.append(s4bmcintPK.getBinRangoInferior());builder.append("'");
-        builder.append(",");
-        
-        builder.append(codProceso);
-        builder.append(",");
-        
-        builder.append(s4bmcint.getLongBin());
-        builder.append(",");
-        
-        builder.append("'");builder.append(s4bmcint.getMarcaMaster());builder.append("'");
-        builder.append(",");
-        
-        builder.append("'");builder.append(s4bmcint.getTipoTarjeMaster());builder.append("'");
-        builder.append(",");
-        
-        builder.append(System.lineSeparator());
-        
-        builder.append(s4bmcint.getIdentifMiembro());
-        builder.append(",");
-        
-        builder.append("'");builder.append(s4bmcint.getTipoProduMaster());builder.append("'");
-        builder.append(",");
-        
-        builder.append(s4bmcint.getEndpoint());
-        builder.append(",");
-        
-        builder.append("'");builder.append(s4bmcint.getCodPaisMaster());builder.append("'");
-        builder.append(",");
-        
-        builder.append(s4bmcint.getCodPaisMasterNum());
-        builder.append(",");
-        
-        builder.append("'");builder.append(s4bmcint.getRegionMas());builder.append("'");
-        builder.append(",");
-        
-        builder.append(s4bmcint.getCodMonMas());
-        builder.append(",");
-        
-        builder.append(s4bmcint.getExpCodMon());
-        builder.append(",");
-        
-        builder.append("'");builder.append(s4bmcint.getClaseProducto());builder.append("'");
-        builder.append(",");
-        
-        builder.append("'");builder.append(s4bmcint.getIndRutaTrans());builder.append("'");
-        builder.append(",");
-        
-        builder.append("'");builder.append(s4bmcint.getIndReasignarProdu());builder.append("'");
-        builder.append(",");
-        
-        
-//        String fechaMod = new SimpleDateFormat("yyyyMMdd").format(new Date());
-//        String fechaMod = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
-        builder.append(s4bmcint.getFechaModific());
-        builder.append(",");
-        
-        builder.append(System.lineSeparator());
-        
-        builder.append("'");builder.append(s4bmcint.getIndCashback());builder.append("'");
-        builder.append(",");
-        
-        builder.append("'");builder.append(s4bmcint.getIndReasigFirstPre());builder.append("'");
-        builder.append(",");
-        
-        builder.append("'");builder.append(s4bmcint.getIndPaypass());builder.append("'");
-        builder.append(",");
-        
-        builder.append("'");builder.append(s4bmcint.getIndLevelParti());builder.append("'");
-        builder.append(",");
-                
-        builder.append(s4bmcint.getFechaActivLevelParti());
-        builder.append(",");
-        
-        builder.append(s4bmcint.getTipoTarjetaHp());
-        builder.append(",");
-        
-        builder.append(s4bmcint.getMarcaTarjetaHp());        
-        builder.append(");");
-        builder.append(System.lineSeparator());
-        
-        out.println(builder.toString());
+        out.println(builder);
     }
 
     
