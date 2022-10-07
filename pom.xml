@@ -40,7 +40,7 @@
 			<artifactId>h2</artifactId>
 			<version>1.4.197</version>
 		</dependency>
-
+<!--
 		<dependency>
 			<groupId>es.redsys.comunes.drivers.db2</groupId>
 			<artifactId>db2jcc</artifactId>
@@ -52,7 +52,7 @@
 			<artifactId>db2jcc_license_cisuz</artifactId>
 			<version>3.61.75</version>
 		</dependency>
-		
+-->		
 		<!-- https://mvnrepository.com/artifact/org.apache.derby/derbyclient -->
 		<dependency>
 		    <groupId>org.apache.derby</groupId>
