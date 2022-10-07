@@ -17,6 +17,8 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
 
@@ -47,7 +49,7 @@ public class Rechazos {
 
             emf = Persistence.createEntityManagerFactory("llaaPU");
 
-//            loadIP0040();
+            loadIP0040();
             
             try(PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(TANDEM_SQL)))){            
             	try(BufferedReader in = new BufferedReader(new FileReader(TARJETAS))){
@@ -82,11 +84,17 @@ public class Rechazos {
 
                 log.info("createIP0040....");
                 t1 = System.currentTimeMillis();
+                LocalTime lt1 = LocalTime.now();
+
                 while ((reg = reader.readLine()) != null) {
                     createIP0040(reg);                     
                 }
 
                 t2 = System.currentTimeMillis();
+
+                LocalTime lt2 = LocalTime.now();
+                long segs = ChronoUnit.MILLIS.between(lt1, lt2);
+                log.info("loadIP0040. en {} milisegs",segs);
             }
         } catch (IOException e) {
             log.error("ERROR GRAVE !!!!", e);
